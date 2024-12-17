@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, AlertTriangle, Loader2, Wand2 } from 'lucide-react';
+import { CheckCircle, AlertTriangle, Loader2, Wand2, AlertOctagon } from 'lucide-react';
 
 interface ChunkResult {
   chunk: number;
@@ -27,14 +27,31 @@ function ChunkResultCard({ chunk, predicted_classes }: ChunkResult) {
         </span>
       </div>
       <div className="space-y-1">
-        {predicted_classes.map((prediction, index) => (
-          <div
-            key={index}
-            className="text-sm px-2 py-1 rounded bg-red-500/10 text-red-500"
-          >
-            {prediction}
-          </div>
-        ))}
+        {predicted_classes.map((prediction, index) => {
+          // Determine color based on prediction type
+          let bgColor = '';
+          let textColor = '';
+          
+          if (prediction.includes('Spoofed')) {
+            bgColor = 'bg-red-500/10';
+            textColor = 'text-red-500';
+          } else if (prediction.includes('Non-spoofed')) {
+            bgColor = 'bg-yellow-500/10';
+            textColor = 'text-yellow-500';
+          } else {
+            bgColor = 'bg-yellow-500/10';
+            textColor = 'text-yellow-500';
+          }
+
+          return (
+            <div
+              key={index}
+              className={`text-sm px-2 py-1 rounded ${bgColor} ${textColor}`}
+            >
+              {prediction}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -70,25 +87,44 @@ export default function AnalysisResult({ result, isLoading, error }: AnalysisRes
     );
   }
 
-  const isReal = result.final_decision.toLowerCase().includes('real');
+  // Determine the type of result
+  const decision = result.final_decision.toLowerCase();
+  let statusColor = '';
+  let statusBg = '';
+  let Icon;
+  let statusText = result.final_decision;
+
+  if (decision.includes('deepfake') || decision.includes('spoofed')) {
+    // Deepfake detected - Red with alert octagon
+    statusColor = 'text-red-500';
+    statusBg = 'bg-red-500/10 border-red-500/20';
+    Icon = AlertOctagon;
+  } else if (decision.includes('suspicious') || decision.includes('sussy')) {
+    // Suspicious - Yellow with alert triangle
+    statusColor = 'text-yellow-500';
+    statusBg = 'bg-yellow-500/10 border-yellow-500/20';
+    Icon = AlertTriangle;
+  } else if (decision.includes('clean') || decision.includes('real')) {
+    // Clean - Green with checkmark
+    statusColor = 'text-green-500';
+    statusBg = 'bg-green-500/10 border-green-500/20';
+    Icon = CheckCircle;
+  } else {
+    // Default to suspicious if we can't determine the state
+    statusColor = 'text-yellow-500';
+    statusBg = 'bg-yellow-500/10 border-yellow-500/20';
+    Icon = AlertTriangle;
+  }
 
   return (
     <div className="space-y-6">
       {/* Final Decision */}
-      <div className={`p-6 rounded-lg border ${
-        isReal ? 'bg-green-500/10 border-green-500/20' : 'bg-red-500/10 border-red-500/20'
-      }`}>
+      <div className={`p-6 rounded-lg border ${statusBg}`}>
         <div className="flex items-center space-x-3">
-          {isReal ? (
-            <CheckCircle className="w-8 h-8 text-green-500 flex-shrink-0" />
-          ) : (
-            <AlertTriangle className="w-8 h-8 text-red-500 flex-shrink-0" />
-          )}
+          <Icon className={`w-8 h-8 ${statusColor} flex-shrink-0`} />
           <div>
-            <h3 className={`text-lg font-semibold ${
-              isReal ? 'text-green-500' : 'text-red-500'
-            }`}>
-              {result.final_decision}
+            <h3 className={`text-lg font-semibold ${statusColor}`}>
+              {statusText}
             </h3>
             <p className="text-content-secondary">
               Analysis completed across {result.chunk_results.length} audio chunks

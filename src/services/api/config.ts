@@ -1,5 +1,5 @@
 // API Configuration
-export const API_BASE_URL = 'https://battle-occur-walls-faces.trycloudflare.com';
+export const API_BASE_URL = 'https://pose-footwear-hour-court.trycloudflare.com';
 
 export const API_ENDPOINTS = {
   predict: `${API_BASE_URL}/predict`
