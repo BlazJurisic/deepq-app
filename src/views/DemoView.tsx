@@ -49,6 +49,8 @@ export default function DemoView() {
     setResult(null);
 
     try {
+      console.log("KKKKKKKKKKKKKKHHHHHH")
+      console.log("KKKKKKKKKKKKKKHHHHHH")
       const analysisResult = await analyzeAudioFile(selectedFile);
       setResult(analysisResult);
     } catch (err) {
