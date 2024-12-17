@@ -13,7 +13,7 @@ export default function Header() {
         <h1 className="text-xl lg:text-2xl font-bold text-content-primary">
           Welcome, John
         </h1>
-        <p className="text-content-secondary text-sm">
+        <p className="text-content-secondary">
           Manage your deepfake detection settings
         </p>
       </div>

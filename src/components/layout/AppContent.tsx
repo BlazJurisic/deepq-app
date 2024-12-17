@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useMockNotifications } from '../../utils/mockNotifications';
 import { Loader2 } from 'lucide-react';
@@ -10,8 +11,14 @@ import GradientBackground from './GradientBackground';
 
 export default function AppContent() {
   const { user, isLoading } = useAuth();
-  const [currentView, setCurrentView] = useState('dashboard');
+  const location = useLocation();
+  const navigate = useNavigate();
   useMockNotifications();
+
+  // Handle view changes through navigation
+  const handleViewChange = (view: string) => {
+    navigate(`/${view}`);
+  };
 
   if (isLoading) {
     return (
@@ -31,13 +38,19 @@ export default function AppContent() {
     );
   }
 
+  // Get current view from path
+  const currentView = location.pathname.substring(1) || 'dashboard';
+
   return (
     <div className="flex min-h-screen">
       <GradientBackground />
-      <Sidebar currentView={currentView} onViewChange={setCurrentView} />
+      <Sidebar currentView={currentView} onViewChange={handleViewChange} />
       <main className="flex-1 min-h-screen overflow-auto p-4 lg:p-8">
         <Header />
-        <MainContent currentView={currentView} />
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/*" element={<MainContent />} />
+        </Routes>
       </main>
     </div>
   );

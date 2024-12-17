@@ -10,7 +10,7 @@ export default function Logo() {
       height="32" 
       viewBox="0 0 490 361" 
       fill="none" 
-      className={theme === 'dark' ? 'text-white' : 'text-purple-600'}
+      className={theme === 'dark' ? 'text-white' : 'text-white'}
     >
       <path 
         d="M315.789 360L438.235 232.502L489.266 253.29L489.279 360.02L315.789 360Z" 

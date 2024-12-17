@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Puzzle, BarChart2, Users, CreditCard, Settings, HelpCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Puzzle, BarChart2, Users, CreditCard, Settings, HelpCircle, ChevronLeft, ChevronRight, AudioWaveform } from 'lucide-react';
 import Logo from './Logo';
 
 interface SidebarProps {
@@ -27,13 +27,14 @@ export default function Sidebar({ currentView, onViewChange }: SidebarProps) {
     { id: 'statistics', icon: BarChart2, label: 'Statistics' },
     { id: 'users', icon: Users, label: 'Users' },
     { id: 'billing', icon: CreditCard, label: 'Billing' },
+    { id: 'demo', icon: AudioWaveform, label: 'Demo' },
     { id: 'settings', icon: Settings, label: 'Settings' },
     { id: 'help', icon: HelpCircle, label: 'Help & Support' }
   ];
 
   return (
     <div 
-      className={`bg-background-secondary/40 backdrop-blur-md border-r min-h-screen sticky top-0 transition-all duration-300 ease-in-out flex-shrink-0 ${
+      className={`bg-purple-950 border-r border-white/10 min-h-screen h-full sticky top-0 transition-all duration-300 ease-in-out flex-shrink-0 ${
         isCollapsed ? 'w-20' : 'w-64'
       }`}
     >
@@ -58,7 +59,7 @@ export default function Sidebar({ currentView, onViewChange }: SidebarProps) {
               className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-start space-x-3'} px-4 py-3 rounded-lg w-full transition-colors ${
                 currentView === item.id
                   ? 'bg-purple-600 text-white'
-                  : 'text-content-secondary hover:bg-background-card hover:text-content-primary'
+                  : 'text-white/70 hover:bg-white/10 hover:text-white'
               }`}
               title={isCollapsed ? item.label : undefined}
             >

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LogOut, Settings, User as UserIcon, HelpCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -10,6 +11,7 @@ export default function UserMenu({ userName }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -22,12 +24,9 @@ export default function UserMenu({ userName }: UserMenuProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleNavigation = (view: string) => {
-    const setCurrentView = (window as any).__setCurrentView;
-    if (setCurrentView) {
-      setCurrentView(view);
-      setIsOpen(false);
-    }
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    setIsOpen(false);
   };
 
   return (
@@ -48,7 +47,7 @@ export default function UserMenu({ userName }: UserMenuProps) {
 
           <div className="py-1">
             <button
-              onClick={() => handleNavigation('settings')}
+              onClick={() => handleNavigation('/settings')}
               className="w-full px-4 py-2 text-left text-content-secondary hover:bg-background-primary flex items-center space-x-2"
             >
               <Settings size={16} />
@@ -56,7 +55,7 @@ export default function UserMenu({ userName }: UserMenuProps) {
             </button>
 
             <button
-              onClick={() => handleNavigation('help')}
+              onClick={() => handleNavigation('/help')}
               className="w-full px-4 py-2 text-left text-content-secondary hover:bg-background-primary flex items-center space-x-2"
             >
               <HelpCircle size={16} />
