@@ -1,71 +1,44 @@
-import { API_TIMEOUT } from './config';
-import { ApiError } from './errors';
-import { ApiRequestOptions } from './types';
-import { validateAnalysisResponse } from './validation';
+import { API_BASE_URL } from '../../config/api';
+
+export interface ApiError {
+  message: string;
+  status?: number;
+}
+
+const getAuthToken = () => {
+  return localStorage.getItem('token');
+};
 
 export async function apiRequest<T>(
-  url: string, 
-  options: ApiRequestOptions = {}
+  endpoint: string,
+  options: RequestInit = {}
 ): Promise<T> {
-  const { timeout = API_TIMEOUT, ...fetchOptions } = options;
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...options.headers
+  };
+
+  const token = getAuthToken();
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
 
   try {
-    const response = await fetch(url, {
-      ...fetchOptions,
-      signal: controller.signal,
-      headers: {
-        'accept': 'application/json',
-        ...fetchOptions.headers,
-      }
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers
     });
 
-    const contentType = response.headers.get('content-type');
-    let data;
-    
-    if (contentType?.includes('application/json')) {
-      data = await response.json();
-    } else {
-      const text = await response.text();
-      try {
-        data = JSON.parse(text);
-      } catch {
-        throw new ApiError('Invalid response format: not JSON');
-      }
-    }
-
     if (!response.ok) {
-      throw new ApiError(
-        data.detail || data.message || data.error || 'Request failed',
-        response.status,
-        data
-      );
+      const error = await response.json();
+      throw new Error(error.detail || error.message || 'An error occurred');
     }
 
-    // Validate response format for analysis endpoints
-    if (url.includes('/predict')) {
-      validateAnalysisResponse(data);
-    }
-
-    return data as T;
+    return response.json();
   } catch (error) {
-    if (error instanceof ApiError) {
-      throw error;
-    }
-    
     if (error instanceof Error) {
-      if (error.name === 'AbortError') {
-        throw new ApiError('Request timed out');
-      }
-      if (error instanceof SyntaxError) {
-        throw new ApiError('Invalid response format');
-      }
-      throw new ApiError(error.message);
+      throw new Error(error.message);
     }
-    
-    throw new ApiError('An unexpected error occurred');
-  } finally {
-    clearTimeout(timeoutId);
+    throw new Error('An unexpected error occurred');
   }
 }

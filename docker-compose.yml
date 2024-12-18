@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_BASE_URL=http://localhost/api/v1
+    networks:
+      - deepq-network
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/deepq
+      - SECRET_KEY=${SECRET_KEY}
+      - ENVIRONMENT=production
+    networks:
+      - deepq-network
+
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=deepq
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - deepq-network
+
+networks:
+  deepq-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

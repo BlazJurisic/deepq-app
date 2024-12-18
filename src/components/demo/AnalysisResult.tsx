@@ -4,6 +4,7 @@ import { CheckCircle, AlertTriangle, Loader2, Wand2, AlertOctagon } from 'lucide
 interface ChunkResult {
   chunk: number;
   predicted_classes: string[];
+  confidence_scores: number[];
 }
 
 interface AnalysisResult {
@@ -17,7 +18,11 @@ interface AnalysisResultProps {
   error: string | null;
 }
 
-function ChunkResultCard({ chunk, predicted_classes }: ChunkResult) {
+function formatConfidence(score: number): string {
+  return (score * 100).toFixed(2) + '%';
+}
+
+function ChunkResultCard({ chunk, predicted_classes, confidence_scores }: ChunkResult) {
   return (
     <div className="bg-background-primary rounded p-3 border">
       <div className="flex justify-between items-center mb-2">
@@ -43,12 +48,17 @@ function ChunkResultCard({ chunk, predicted_classes }: ChunkResult) {
             textColor = 'text-yellow-500';
           }
 
+          const confidence = confidence_scores[index];
+
           return (
             <div
               key={index}
-              className={`text-sm px-2 py-1 rounded ${bgColor} ${textColor}`}
+              className={`flex items-center justify-between text-sm px-2 py-1 rounded ${bgColor}`}
             >
-              {prediction}
+              <span className={textColor}>{prediction}</span>
+              <span className={`ml-2 font-medium ${textColor}`}>
+                {formatConfidence(confidence)}
+              </span>
             </div>
           );
         })}

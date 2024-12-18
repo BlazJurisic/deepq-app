@@ -1,14 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-
-interface User {
-  email: string;
-  name: string;
-  role: 'admin' | 'user';
-}
+import { authApi, LoginCredentials, AuthResponse } from '../services/api/auth';
 
 interface AuthContextType {
-  user: User | null;
-  login: (email: string, password: string) => Promise<void>;
+  user: AuthResponse['user'] | null;
+  login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -16,36 +11,24 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthResponse['user'] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Check for existing session
     const savedUser = localStorage.getItem('user');
-    if (savedUser) {
+    const token = localStorage.getItem('token');
+    if (savedUser && token) {
       setUser(JSON.parse(savedUser));
     }
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (credentials: LoginCredentials) => {
     setIsLoading(true);
-    
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Validate credentials
-      if (email === 'test@deepq.io' && password === 'test') {
-        const user = {
-          email,
-          name: 'John Doe',
-          role: 'admin' as const
-        };
-        setUser(user);
-        localStorage.setItem('user', JSON.stringify(user));
-      } else {
-        throw new Error('Invalid credentials');
-      }
+      const response = await authApi.login(credentials);
+      setUser(response.user);
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response.user));
     } finally {
       setIsLoading(false);
     }
@@ -53,6 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
   };
 
