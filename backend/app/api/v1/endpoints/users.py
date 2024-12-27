@@ -6,7 +6,7 @@ from app.api import deps
 
 router = APIRouter()
 
-@router.get("/", response_model=List[schemas.User])
+@router.get("/", response_model=List[schemas.User.User])
 async def read_users(
     db: Session = Depends(deps.get_db),
     skip: int = 0,
@@ -16,14 +16,15 @@ async def read_users(
     """
     Retrieve users.
     """
+    print("################### current user  ", current_user)
     users = await crud.user.get_multi(db, skip=skip, limit=limit)
     return users
 
-@router.post("/", response_model=schemas.User)
+@router.post("/", response_model=schemas.User.User)
 async def create_user(
     *,
     db: Session = Depends(deps.get_db),
-    user_in: schemas.UserCreate,
+    user_in: schemas.User.UserCreate,
     current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
@@ -38,12 +39,12 @@ async def create_user(
     user = await crud.user.create(db, obj_in=user_in)
     return user
 
-@router.put("/{user_id}", response_model=schemas.User)
+@router.put("/{user_id}", response_model=schemas.User.User)
 async def update_user(
     *,
     db: Session = Depends(deps.get_db),
     user_id: str,
-    user_in: schemas.UserUpdate,
+    user_in: schemas.User.UserUpdate,
     current_user: models.User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
@@ -58,7 +59,7 @@ async def update_user(
     user = await crud.user.update(db, db_obj=user, obj_in=user_in)
     return user
 
-@router.delete("/{user_id}", response_model=schemas.Msg)
+@router.delete("/{user_id}", response_model=schemas.Msg.Msg)
 async def delete_user(
     *,
     db: Session = Depends(deps.get_db),

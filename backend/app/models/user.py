@@ -1,9 +1,16 @@
-from sqlalchemy import Boolean, Column, String, DateTime
+from sqlalchemy import Boolean, Column, String, DateTime, text
 from sqlalchemy.sql import func
+from sqlalchemy.dialects.postgresql import UUID
+
 from app.db.base_class import Base
 
 class User(Base):
-    id = Column(String, primary_key=True, index=True)
+    __tablename__ = "users"
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        server_default=text("gen_random_uuid()"),  # or 'uuid_generate_v4()' if using the uuid-ossp extension
+    )
     email = Column(String, unique=True, index=True, nullable=False)
     full_name = Column(String)
     hashed_password = Column(String, nullable=False)

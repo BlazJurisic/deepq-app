@@ -8,8 +8,8 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.db.session import SessionLocal
 from app.models.user import User
-from app.schemas.token import TokenPayload
-from app.crud import crud_user
+from app.schemas.token import Token, TokenPayload
+from app.crud import user as crud_user
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/auth/login"

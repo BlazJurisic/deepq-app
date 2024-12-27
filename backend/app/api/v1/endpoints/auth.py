@@ -8,11 +8,11 @@ from app.core import security
 
 router = APIRouter()
 
-@router.post("/register", response_model=schemas.User)
+@router.post("/register", response_model=schemas.User.UserCreate)
 async def register(
     *,
     db: Session = Depends(deps.get_db),
-    user_in: schemas.UserCreate,
+    user_in: schemas.User.UserCreate,
 ) -> Any:
     """
     Register new user.
@@ -26,7 +26,7 @@ async def register(
     user = await crud.user.create(db, obj_in=user_in)
     return user
 
-@router.post("/login", response_model=schemas.Token)
+@router.post("/login", response_model=schemas.Token.Token)
 async def login(
     db: Session = Depends(deps.get_db),
     form_data: OAuth2PasswordRequestForm = Depends()
@@ -46,14 +46,15 @@ async def login(
             status_code=400, detail="Inactive user"
         )
     access_token = security.create_access_token(user.id)
+    print("###################ACC ", access_token)
     return {
         "access_token": access_token,
         "token_type": "bearer",
     }
 
-@router.post("/forgot-password", response_model=schemas.Msg)
+@router.post("/forgot-password", response_model=schemas.Msg.Msg)
 async def forgot_password(
-    email_in: schemas.EmailStr,
+    email_in: str,
     db: Session = Depends(deps.get_db),
 ) -> Any:
     """
@@ -65,7 +66,7 @@ async def forgot_password(
         pass
     return {"msg": "Password recovery email sent"}
 
-@router.post("/reset-password", response_model=schemas.Msg)
+@router.post("/reset-password", response_model=schemas.Msg.Msg)
 async def reset_password(
     token: str,
     new_password: str,

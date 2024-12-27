@@ -1,15 +1,39 @@
+# FastAPI for building APIs
 fastapi==0.109.1
+
+# Uvicorn ASGI server
 uvicorn==0.27.0
+
+# JWT & Cryptography for security/auth
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
+bcrypt>=4.0.1
+
 python-multipart==0.0.6
+
+# Pydantic & Settings
 pydantic==2.6.0
 pydantic-settings==2.1.0
-sqlalchemy==2.0.25
+pydantic[email]
+
+# SQLAlchemy (core + async)
+sqlalchemy[asyncio]==2.0.25
+
+# Alembic for migrations
 alembic==1.13.1
+
+# Async PostgreSQL driver
+asyncpg>=0.27
+
+# Environment variable management
 python-dotenv==1.0.0
+
+# Aiofiles for async file handling
 aiofiles==23.2.1
-python-jose[cryptography]==3.3.0
+
+# Email sending
 emails==0.6
 jinja2==3.1.3
+
+# WebSockets
 websockets==12.0

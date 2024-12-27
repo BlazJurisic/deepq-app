@@ -6,7 +6,7 @@ from app.api import deps
 
 router = APIRouter()
 
-@router.get("/admin", response_model=List[schemas.Notification])
+@router.get("/admin", response_model=List[schemas.Notification.Notification])
 async def get_admin_notifications(
     db: Session = Depends(deps.get_db),
     current_user: models.User = Depends(deps.get_current_active_superuser),
@@ -22,7 +22,8 @@ async def get_admin_notifications(
             "type": "info",
             "timestamp": "2024-03-21T10:30:00Z",
             "read": False,
-            "category": "user_management"
+            "category": "user_management",
+            "user_id": "1"
         },
         {
             "id": "2",
@@ -31,6 +32,8 @@ async def get_admin_notifications(
             "type": "warning",
             "timestamp": "2024-03-21T09:15:00Z",
             "read": True,
-            "category": "system"
+            "category": "system",
+            "user_id": "1"
+
         }
     ]

@@ -10,41 +10,57 @@ router = APIRouter()
 async def get_admin_settings(
     db: Session = Depends(deps.get_db),
     current_user: models.User = Depends(deps.get_current_active_superuser),
-) -> Any:
+) -> schemas.Settings.AdminSettings:
     """
     Get admin settings.
     """
-    return {
-        "userManagement": {
-            "allowPublicRegistration": True,
-            "requireEmailVerification": True,
-            "passwordPolicy": {
-                "minLength": 12,
-                "requireSpecialChars": True,
-                "requireNumbers": True,
-                "requireUppercase": True
-            },
-            "defaultUserRole": "user",
-            "autoSendCredentials": True
-        },
-        "security": {
-            "maxLoginAttempts": 5,
-            "sessionTimeout": 30,
-            "ipWhitelist": []
-        }
-    }
+    settings = await crud.settings.get_current(db)
+    if not settings:
+        # Return default settings if none exist
+        return schemas.Settings.AdminSettings()
+    return schemas.Settings.AdminSettings(
+        user_management=schemas.UserManagementConfig(
+            allow_public_registration=settings.allow_public_registration,
+            require_email_verification=settings.require_email_verification,
+            password_policy=schemas.PasswordPolicy(
+                min_length=settings.password_min_length,
+                require_special_chars=settings.require_special_chars,
+                require_numbers=settings.require_numbers,
+                require_uppercase=settings.require_uppercase
+            ),
+            default_user_role="user",
+            auto_send_credentials=True
+        ),
+        security=schemas.Settings.SecurityConfig(
+            max_login_attempts=settings.max_login_attempts,
+            session_timeout=settings.session_timeout,
+            ip_whitelist=[]
+        )
+    )
 
 @router.put("/admin")
 async def update_admin_settings(
     *,
     db: Session = Depends(deps.get_db),
-    settings_in: schemas.AdminSettings,
+    settings_in: schemas.Settings.AdminSettings,
     current_user: models.User = Depends(deps.get_current_active_superuser),
-) -> Any:
+) -> schemas.Settings.AdminSettingsResponse:
     """
     Update admin settings.
     """
-    return {
-        "success": True,
-        "message": "Settings updated successfully"
-    }
+    try:
+        settings_update = schemas.Settings.SettingsUpdate(
+            user_management=settings_in.user_management,
+            security=settings_in.security
+        )
+        await crud.settings.update_settings(db, settings_in=settings_update)
+        return schemas.Settings.AdminSettingsResponse(
+            success=True,
+            message="Settings updated successfully",
+            settings=settings_in
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Failed to update settings: {str(e)}"
+        )
