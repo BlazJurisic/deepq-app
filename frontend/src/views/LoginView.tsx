@@ -19,7 +19,13 @@ export default function LoginView() {
     setError('');
     
     try {
-      await login(email, password);
+      console.log("email: ", email)
+      console.log("pass: ", password)
+      await login(
+        {
+          "username": email, 
+          "password": password
+        });
     } catch (err) {
       setError('Invalid email or password');
       setIsShaking(true);

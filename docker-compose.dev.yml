@@ -1,26 +1,32 @@
 services:
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    command: npm run dev -- --host 0.0.0.0
     ports:
-      - "80:80"
+      - "8076:5173"
     depends_on:
       - backend
+      - db
     environment:
-      - VITE_API_BASE_URL=http://localhost/api/v1
+      - VITE_BACKEND_URL=http://0.0.0.0:8077/api/v1
     networks:
       - deepq-network
+    volumes:
+      - ./frontend:/app
 
   backend:
     build: ./backend
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     ports:
-      - "8000:8000"
+      - "8077:8000"
     depends_on:
       - db
     environment:
-      - DATABASE_URL=postgresql+asyncpg://postgres:SifraNekaZaBazu123@database-deepq-demo-1.cb6os2kiyuk4.us-east-1.rds.amazonaws.com:5432/deepq
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/deepq
       - SECRET_KEY=${SECRET_KEY}
-      - ENVIRONMENT=production
+      - ENVIRONMENT=development
     networks:
       - deepq-network
     volumes:
@@ -45,10 +51,22 @@ services:
       retries: 5
       start_period: 5s
 
+  pgadmin:
+    image: dpage/pgadmin4:6.21
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_LOG_LEVEL: '"ERROR"'
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - deepq-network
+    volumes:
+      - ./pgadmin_data:/var/lib/pgadmin
+
 
 networks:
   deepq-network:
     driver: bridge
-
-volumes:
-  postgres_data:

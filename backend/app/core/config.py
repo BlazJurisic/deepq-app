@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     APP_NAME: str = "DeepQ"
-    API_V1_STR: str = "/api"
+    API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = "tkototamopeva"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     ALGORITHM: str = "HS256"

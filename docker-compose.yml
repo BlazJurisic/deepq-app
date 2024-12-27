@@ -15,31 +15,16 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1
     ports:
       - "8000:8000"
-    depends_on:
-      - db
+
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/deepq
+      - DATABASE_URL=postgresql+asyncpg://postgres:SifraNekaZaBazu123@database-deepq-demo-1.cb6os2kiyuk4.us-east-1.rds.amazonaws.com:5432/deepq
       - SECRET_KEY=${SECRET_KEY}
       - ENVIRONMENT=production
     networks:
       - deepq-network
 
-  db:
-    image: postgres:15-alpine
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=deepq
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - deepq-network
+
 
 networks:
   deepq-network:
     driver: bridge
-
-volumes:
-  postgres_data:

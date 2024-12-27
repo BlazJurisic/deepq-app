@@ -24,6 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (credentials: LoginCredentials) => {
     setIsLoading(true);
+    console.log("###CREDS: ", credentials)
     try {
       const response = await authApi.login(credentials);
       setUser(response.user);

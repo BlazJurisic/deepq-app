@@ -12,6 +12,10 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
 
+@app.get("/ping")
+def home():
+    return {"message":"pong!"}
+
 # Set all CORS enabled origins
 app.add_middleware(
     CORSMiddleware,

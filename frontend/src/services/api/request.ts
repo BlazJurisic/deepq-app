@@ -26,7 +26,8 @@ export async function apiRequest<T>(
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
-      headers
+      headers,
+      // credentials: 'include'
     });
 
     if (!response.ok) {

@@ -34,6 +34,9 @@ async def login(
     """
     OAuth2 compatible token login.
     """
+    print("### USERNAME ", form_data.username)
+    print("### PASSWORD ", form_data.password)
+
     user = await crud.user.authenticate(
         db, email=form_data.username, password=form_data.password
     )

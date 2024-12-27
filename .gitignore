@@ -1,4 +1,6 @@
 # Logs
+pg_data/
+pgadmin_data/
 logs
 *.log
 npm-debug.log*
