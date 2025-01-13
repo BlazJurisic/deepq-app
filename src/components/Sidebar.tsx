@@ -26,7 +26,7 @@ export default function Sidebar({ currentView, onViewChange }: SidebarProps) {
     { id: 'integration', icon: Puzzle, label: 'Integration' },
     { id: 'statistics', icon: BarChart2, label: 'Statistics' },
     { id: 'users', icon: Users, label: 'Users' },
-    { id: 'billing', icon: CreditCard, label: 'Billing' },
+    // { id: 'billing', icon: CreditCard, label: 'Billing' },
     { id: 'demo', icon: AudioWaveform, label: 'Demo' },
     { id: 'settings', icon: Settings, label: 'Settings' },
     { id: 'help', icon: HelpCircle, label: 'Help & Support' }
